@@ -1,10 +1,17 @@
+#include <iostream>
+#include <limits>
 #include "linked_list.h"
 
-void LinkedList::prepend(int data) {
-    head = new Node(data, head);
+void LinkedList::print() const {
+    Node* current = head;
+    while (current) {
+        std::cout << current->data << " -> ";
+        current = current->next;
+    }
+    std::cout << "nullptr" << std::endl;
 }
 
-bool LinkedList::search(int data) {
+bool LinkedList::includes(int data) const {
     Node* current = head;
     while (current) {
         if (current->data == data) return true;
@@ -13,337 +20,176 @@ bool LinkedList::search(int data) {
     return false;
 }
 
-// void LinkedList::append(int data) {
-//     if (!head) {
-//         head = new Node(data);
-//         return;
-//     }
-//     Node* temp = head;
-//     while (temp->next) {
-//         temp = temp->next;
-//     }
-//     temp->next = new Node(data);
-// }
+Node* LinkedList::getAtIndex(int index) const {
+    if (index < 0) return nullptr;
 
-// #include <iostream>
-// #include <limits>
-// #include <cassert> // For tests
+    Node* current = head;
+    int count = 0;
 
-// struct node {
-//     node* next;
-//     int data;
+    while (current) {
+        if (count == index) return current;
+        current = current->next;
+        count++;
+    }
 
-//     explicit node(int data) :  next(nullptr), data(data) {}
-//     node(node* head, int data) : next(head), data(data) {}
-// };
+    return nullptr;
+}
 
-// node* push(node* head, int data) {
-//     return new node {head, data};
-// }
+int LinkedList::valueAtIndex(int index) const {
+    if (index < 0) return std::numeric_limits<int>::min();
 
-// void insertAfter(node* head, int data) {
-//     if (!head) return;
+    Node* current = head;
+    int count = 0;
 
-//     node* newNode = new node(data);
-//     newNode->next = head->next;
-//     head->next = newNode;
-// }
+    while (current) {
+        if (count == index) return current->data;
+        current = current->next;
+        count++;
+    }
 
-// node* append(node* head, int data) {
-//     node* newNode = new node(data);
-//     if (!head) { return newNode; }
+    return std::numeric_limits<int>::min();
+}
 
-//     node* current = head;
-//     while (current->next) { current = current->next; }
-//     current->next = newNode;
+Node* LinkedList::findByValue(int value) const {
+    Node* current = head;
+    while (current) {
+        if (current->data == value) {
+            return current;
+        }
+        current = current->next;
+    }
+    return nullptr;
+}
 
-//     return head;
-// }
+int LinkedList::countNodes() const {
+    int count = 0;
+    Node* current = head;
+    while (current) {
+        count++;
+        current = current->next;
+    }
+    return count;
+}
 
-// node* deleteFirst(node* head) {
-//     if (!head) { return nullptr; }
-//     node* newHead = head->next;
-//     delete head;
-//     return newHead;
-// }
+int LinkedList::firstNodeData() const {
+    if (!head) return std::numeric_limits<int>::min();
+    return head->data;
+}
 
-// node* deleteNode(node* head, node* nodeToDelete) {
-//     if (!head || !nodeToDelete) { return head; }
+int LinkedList::lastNodeData() const {
+    if (!head) return std::numeric_limits<int>::min();
+    Node* current = head;
+    while (current->next) {
+        current = current->next;
+    }
+    return current->data;
+}
 
-//     if (head == nodeToDelete) {
-//         node* newHead = head->next;
-//         delete nodeToDelete;
-//         return newHead;
-//     }
+void LinkedList::prepend(int data) {
+    head = new Node(data, head);
+}
 
-//     node* current = head;
-//     while (current->next && current-> next != nodeToDelete) {
-//         current = current->next;
-//     }
+void LinkedList::append(int data) {
+    if (!head) {
+        head = new Node(data);
+        return;
+    }
+    Node* current = head;
+    while (current->next) {
+        current = current->next;
+    }
+    current->next = new Node(data);
+}
 
-//     if (!current->next) return head;
+void LinkedList::insertAfterNode(int data, Node* head) {
+    if (!head) return;
 
-//     current->next = nodeToDelete->next;
-//     delete nodeToDelete;
-//     return head;
-// }
+    Node* current = new Node(data);
+    current->next = head->next;
+    head->next = current;
+}
 
-// node* deleteLast(node* head) {
-//     if (!head) { return nullptr; }
+void LinkedList::deleteFirstNode() {
+    if (!head) return;
 
-//     if (!head->next) {
-//         delete head;
-//         return nullptr;
-//     }
+    Node* current = head->next;
+    delete head;
+    head = current;
+}
 
-//     node* current = head;
-//     while (current->next->next) {
-//         current = current->next;
-//     }
-//     delete current->next;
-//     current->next = nullptr;
+void LinkedList::deleteLastNode() {
+    if (!head) return;
 
-//     return head;
-// }
+    if (!head->next) {
+        delete head;
+        head = nullptr;
+        return;
+    }
 
-// node* deleteByValue(node* head, int value) {
-//     if (!head) { return nullptr; }
+    Node* current = head;
+    while (current->next->next) {
+        current = current->next;
+    }
+    delete current->next;
+    current->next = nullptr;
+}
 
-//     if (head->next == nullptr && head->data == value) {
-//         delete head;
-//         return nullptr;
-//     }
+void LinkedList::deleteNode(Node* nodeToDelete) {
+    if (!head || !nodeToDelete) return;
 
-//     if (head->data == value) {
-//         node* current = head->next;
-//         delete head;
-//         return current;
-//     }
+    if (head == nodeToDelete) {
+        Node* newHead = head->next;
+        delete nodeToDelete;
+        head = newHead;
+        return;
+    }
 
-//     node* current = head;
-//     while (current->next && current->next->data != value) {
-//         current = current->next;
-//     }
+    Node* current = head;
+    while (current->next && current->next != nodeToDelete) {
+        current = current->next;
+    }
 
-//     if (!current->next) { return head; }
+    if (!current->next) return;
 
-//     node* nodeToDelete = current->next;
-//     current->next = nodeToDelete->next;
-//     delete nodeToDelete;
-//     return head;
-// }
+    current->next = nodeToDelete->next;
+    delete nodeToDelete;
+}
 
-// void printList(const node* head) {
-//     while (head != nullptr) {
-//         std::cout << head->data << " -> ";
-//         head = head->next;
-//     }
-//     std::cout << "nullptr\n";
-// }
+void LinkedList::deleteByValue(int value) {
+    if (!head) return;
 
-// int countNodes(const node* head) {
-//     int count = 0;
-//     const node* current = head;
-//     while (current) {
-//         count++;
-//         current = current->next;
-//     }
-//     return count;
-// }
+    if (head->data == value) {
+        Node* nodeToDelete = head;
+        head = head->next;
+        delete nodeToDelete;
+        return;
+    }
 
-// int firstNodeData(const node* head) {
-//     if (!head) return std::numeric_limits<int>::min();
-//     return head->data;
-// }
+    Node* current = head;
+    while (current->next) {
+        if (current->next->data == value) {
+            Node* nodeToDelete = current->next;
+            current->next = nodeToDelete->next;
+            delete nodeToDelete;
+            return;
+        }
+        current = current->next;
+    }
+}
 
-// int lastNodeData(const node* head) {
-//     if (!head) return std::numeric_limits<int>::min();
-//     while (head->next) {
-//         head = head->next;
-//     }
-//     return head->data;
-// }
+void LinkedList::reversal() {
+    if (!head || !head->next) return;
 
-// const node* findNodeByValue(const node* head, int value) {
-//     if (!head) { return nullptr; }
-//     while (head->data != value) {
-//         head = head->next;
-//         if (!head) { return nullptr; }
-//     }
-//     return head;
-// }
+    Node* prev = nullptr;
+    Node* current = head;
+    Node* next = nullptr;
 
-// node* reversal(const node* head) {
-//     if (!head) { return nullptr; }
-//     node* reversedList = nullptr;
-//     while (head) {
-//         reversedList = push(reversedList, head->data);
-//         head = head->next;
-//     }
-//     return reversedList;
-// }
+    while (current) {
+        next = current->next;
+        current->next = prev;
+        prev = current;
+        current = next;
+    }
 
-// int main() {
-//     node* head = nullptr;
-//     head = push(head, 30);
-
-//     printList(head);
-
-//      // Tests for correctness
-//     assert(countNodes(head) == 1);
-//     assert(lastNodeData(head) == 30);
-
-//     head = append(head, 40);
-//     head = push(head, 20);
-//     auto save = head;
-//     head = push(head, 10);
-
-//     printList(head);
-//     assert(countNodes(head) == 4);
-//     assert(lastNodeData(head) == 40);
-
-//     insertAfter(save, 25);
-//     printList(head);
-//     assert(countNodes(head) == 5);
-//     assert(lastNodeData(head) == 40);
-
-//     head = deleteLast(head);
-//     printList(head);
-//     assert(countNodes(head) == 4);
-//     assert(lastNodeData(head) == 30);
-//     assert(firstNodeData(head) == 10);
-
-//     head = deleteFirst(head);
-//     printList(head);
-//     assert(countNodes(head) == 3);
-//     assert(lastNodeData(head) == 30);
-//     assert(firstNodeData(head) == 20);
-
-//     head = append(head, 35);
-//     head = append(head, 45);
-//     printList(head);
-//     assert(countNodes(head) == 5);
-//     assert(lastNodeData(head) == 45);
-//     assert(firstNodeData(head) == 20);
-
-//     head = append(head, 55);
-//     printList(head);
-//     assert(countNodes(head) == 6);
-
-//     head = deleteNode(head, head->next->next->next);
-//     printList(head);
-//     assert(countNodes(head) == 5);
-//     assert(lastNodeData(head) == 55);
-//     assert(firstNodeData(head) == 20);
-
-//     while(countNodes(head) > 0) {
-//         head = deleteLast(head);
-//         printList(head);
-//     }
-
-//     head = append(head, 99);
-//     printList(head);
-//     assert(countNodes(head) == 1);
-//     assert(lastNodeData(head) == 99);
-
-//     head = append(head, 55);
-//     printList(head);
-
-//     head = append(head, 60);
-//     printList(head);
-
-//     while(countNodes(head) > 0) {
-//         head = deleteNode(head, head);
-//         printList(head);
-//     }
-//     assert(countNodes(head) == 0);
-
-//     head = append(head, 110);
-//     printList(head);
-//     assert(countNodes(head) == 1);
-//     assert(lastNodeData(head) == 110);
-
-//     head = deleteByValue(head, 100);
-//     printList(head);
-//     assert(countNodes(head) == 1);
-//     assert(lastNodeData(head) == 110);
-
-//     head = deleteByValue(head, 110);
-//     printList(head);
-//     assert(head == nullptr);
-
-//     head = deleteByValue(head, 110);
-//     printList(head);
-//     assert(head == nullptr);
-
-//     head = append(head, 120);
-//     head = append(head, 130);
-//     head = append(head, 140);
-//     head = append(head, 150);
-//     printList(head);
-//     assert(countNodes(head) == 4);
-//     assert(firstNodeData(head) == 120);
-//     assert(lastNodeData(head) == 150);
-//     node* reversed = reversal(head);
-//     std::cout << "REVERSED LIST: ";
-//     printList(reversed);
-//     assert(countNodes(reversed) == 4);
-//     assert(firstNodeData(reversed) == 150);
-//     assert(lastNodeData(reversed) == 120);
-
-//     head = deleteByValue(head, 120);
-//     printList(head);
-//     assert(countNodes(head) == 3);
-//     assert(firstNodeData(head) == 130);
-//     assert(lastNodeData(head) == 150);
-
-//     head = deleteByValue(head, 140);
-//     printList(head);
-//     assert(countNodes(head) == 2);
-//     assert(firstNodeData(head) == 130);
-//     assert(lastNodeData(head) == 150);
-
-//     head = append(head, 160);
-//     head = deleteByValue(head, 150);
-//     printList(head);
-//     assert(countNodes(head) == 2);
-//     assert(firstNodeData(head) == 130);
-//     assert(lastNodeData(head) == 160);
-
-//     head = deleteByValue(head, 130);
-//     printList(head);
-//     assert(countNodes(head) == 1);
-//     assert(firstNodeData(head) == 160);
-//     assert(lastNodeData(head) == 160);
-
-//     head = deleteByValue(head, 170);
-//     printList(head);
-//     assert(countNodes(head) == 1);
-//     assert(firstNodeData(head) == 160);
-//     assert(lastNodeData(head) == 160);
-
-//     head = deleteByValue(head, 160);
-//     printList(head);
-//     assert(countNodes(head) == 0);
-//     assert(firstNodeData(head) == std::numeric_limits<int>::min());
-//     assert(lastNodeData(head) == std::numeric_limits<int>::min());
-
-//     head = push(head, 230);
-//     head = push(head, 220);
-//     printList(head);
-//     node* storedHead = head;
-//     head = push(head, 210);
-//     head = push(head, 200);
-//     printList(head);
-//     const node* foundNode = findNodeByValue(head, 220);
-//     std::cout << storedHead << ": " << storedHead->data << " vs " << foundNode << ": " << foundNode->data << '\n';
-//     assert (storedHead == foundNode);
-
-//     while(countNodes(head) > 0) {
-//         head = deleteNode(head, head);
-//         printList(head);
-//     }
-//     assert(countNodes(head) == 0);
-
-//     return 0;
-// }
+    head = prev;
+}

@@ -10,8 +10,26 @@ struct Node {
 class LinkedList {
 public:
     LinkedList() : head(nullptr) {}
+
+    void print() const;
+    bool includes(int value) const;
+    Node* findByValue(int value) const;
+    int countNodes() const;
+    int firstNodeData() const;
+    int lastNodeData() const;
+    Node* getAtIndex(int index) const;
+    int valueAtIndex(int index) const;
+
+
     void prepend(int value);
-    bool search(int value);
+    void append(int value);
+    void insertAfterNode(int data, Node* head);
+    void deleteFirstNode();
+    void deleteLastNode();
+    void deleteNode(Node* nodeToDelete);
+    void deleteByValue(int value);
+    void reversal();
+
 private:
     Node* head;
 };
